@@ -1,0 +1,33 @@
+.App {
+  text-align: center;
+}
+
+.buttons {
+  margin: .8em 0;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+}
+
+.button {
+  cursor: pointer;
+  display: inline;
+  background-color: black;
+  color: white;
+  margin-left: 8px;
+  padding: 0px 7px 1px 7px;
+  border-radius: 12px;
+}
+.button:first-child {
+  margin-left: 0;
+}
+
+.sleeping {
+  display: inline;
+  font-weight: bold;
+  color: red;
+}
+.sleeping .button {
+  font-weight: normal;
+  font-size: .8em;
+}
