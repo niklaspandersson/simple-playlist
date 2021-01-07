@@ -42,7 +42,8 @@ function App() {
   }
 
   function navigate(value: number) {
-    console.log(`navigate: ${value}`);
+    if(player.current?.duration)
+      player.current!.currentTime = Math.min(Math.max(0, player.current!.currentTime + value), player.current!.duration);
   }
   function clearSleepInterval() {
     window.clearInterval(sleepInterval.current);
@@ -99,7 +100,7 @@ function App() {
       break;
   
     case 'nav':
-       overlayElement = <NavControls onNavigate={t => navigate(t)} />
+       overlayElement = <NavControls onNavigate={t => { navigate(t); setOverlay(undefined)} } />
        break;
 
     default:
@@ -129,11 +130,11 @@ function App() {
           </div>
 
           <div id="controls">
-            {/* <img className="clickable" alt="show navigation controls" src={navIcon} onClick={() => setOverlay('nav')} /> */}
+            <img className="clickable" alt="show navigation controls" src={navIcon} onClick={() => setOverlay('nav')} />
             <img className="clickable" alt="show sleep controls" src={sleepIcon} onClick={() => setOverlay('sleep')} /> 
           </div>
           <div id="status">
-          {sleepLabel && <div className="sleeping">{sleepLabel}</div>}
+            {sleepLabel && <div className="sleeping">{sleepLabel}</div>}
           </div>
          
           { overlay && 

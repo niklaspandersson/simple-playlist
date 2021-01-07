@@ -7,7 +7,10 @@ type Props = {
 }
 
 export const Button:React.FC<Props> = ({id, className, children, onClick}) => {
-  return <div id={id} className={`button ${className ? className : ''}`} onClick={onClick}>
+  return <div id={id} className={`button ${className ? className : ''}`} onClick={ev => {
+    ev.stopPropagation();
+    onClick();
+  }}>
     {children}
   </div>
 }

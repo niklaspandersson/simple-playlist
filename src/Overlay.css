@@ -44,3 +44,23 @@
 #sleep #clear span {
   font-size: 150%;
 }
+
+#nav {
+  display: flex;
+  flex-flow: column;
+  align-self: center;
+}
+
+#nav .button {
+  font-weight: bold;
+  font-size: 110%;
+  padding-top: 3px;
+  padding-bottom: 4px;
+}
+
+#nav .result {
+  color: white;
+  font-weight: bold;
+  font-size: 150%;
+  margin: 2vh;
+}
