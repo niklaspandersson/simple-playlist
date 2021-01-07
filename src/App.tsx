@@ -1,6 +1,5 @@
 import React from 'react';
 import { Clip, Playlist, getPlaylist } from "./playlist";
-import { Button } from "./Button";
 import { Overlay } from "./Overlay";
 import sleepIcon from "./sleep.png";
 import navIcon from "./nav.png";
@@ -121,10 +120,9 @@ function App() {
             <audio
               ref={r => player.current = r}
               controls={true}
-              autoPlay={false}
+              autoPlay={true}
               src={currentClip?.link}
               onEnded={onClipEnded}
-              preload="auto"
               onDurationChange={onPlayerReady}
               onTimeUpdate={onPlayerTimeUpdate} />
           </div>
