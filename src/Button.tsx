@@ -1,12 +1,13 @@
 import React from "react";
 
 type Props = {
-  negative?: boolean;
+  id?:string;
+  className?:string;
   onClick(): void;
 }
 
-export const Button:React.FC<Props> = ({negative, children, onClick}) => {
-  return <div className={`button jump ${negative ? 'negative' : ''}`} onClick={onClick}>
+export const Button:React.FC<Props> = ({id, className, children, onClick}) => {
+  return <div id={id} className={`button ${className ? className : ''}`} onClick={onClick}>
     {children}
   </div>
 }

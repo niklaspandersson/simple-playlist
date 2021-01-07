@@ -2,11 +2,21 @@
   text-align: center;
 }
 
-.buttons {
-  margin: .8em 0;
+.noscroll {
+  overflow: hidden;
+}
+
+#controls {
   display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
+  align-items: center;
+  flex-flow: column;
+}
+
+#controls > * {
+  margin: 2vh;
+}
+.clickable {
+  cursor: pointer;
 }
 
 .button {
@@ -18,16 +28,13 @@
   padding: 0px 7px 1px 7px;
   border-radius: 12px;
 }
-.button:first-child {
-  margin-left: 0;
+
+.button.invert {
+  background-color: white;
+  color: black;
 }
 
 .sleeping {
-  display: inline;
   font-weight: bold;
   color: red;
-}
-.sleeping .button {
-  font-weight: normal;
-  font-size: .8em;
 }

@@ -1,39 +1,16 @@
 import React from 'react';
 import { Clip, Playlist, getPlaylist } from "./playlist";
 import { Button } from "./Button";
+import { Overlay } from "./Overlay";
+import sleepIcon from "./sleep.png";
+import navIcon from "./nav.png";
 
 import './App.css';
+import { SleepControls } from './overlays/SleepControls';
+import { NavControls } from './overlays/NavControls';
 
 const PLAYLIST = process.env.REACT_APP_PLAYLIST_URL || "playlist.json";
 const AUTO_REWIND = parseInt(process.env.REACT_APP_AUTO_REWIND || "5", 10) || 5;
-const jumps = [
-  {
-    title: "-10 min",
-    value: -600
-  },
-  {
-    title: "-1 min",
-    value: -60
-  },
-  {
-    title: "-10 s",
-    value: -10
-  },
-  {
-    title: "10 s",
-    value: 10
-  },
-  {
-    title: "1 min",
-    value: 60
-  },
-  {
-    title: "10 min",
-    value: 600
-  }
-]
-
-const sleep = [1, 15, 30, 45, 60];
 
 function App() {
   const player = React.useRef<HTMLAudioElement | null>();
@@ -43,6 +20,8 @@ function App() {
   const [sleepLabel, setSleepLabel] = React.useState("");
   const [currentClip, setCurrentClip] = React.useState<Clip | null>(null);
   const [playlist, setPlaylist] = React.useState<Playlist | null>(null);
+
+  const [overlay, setOverlay] = React.useState<string|undefined>(undefined); 
 
   React.useEffect(() => {
     (async () => {
@@ -75,6 +54,8 @@ function App() {
     if(sleepInterval.current) {
       clearSleepInterval();
     }
+    if(!value)
+      return;
 
     sleepEnd.current = Date.now() + value*60000;
     setSleepLabel(`${value-1}:59`);
@@ -110,6 +91,21 @@ function App() {
   }
 
   const options = playlist?.clips?.map((c, i) => <option key={c.title} value={i} title={c.title}>{c.title}</option>)
+
+  let overlayElement = <div></div>
+  switch (overlay) {
+    case 'sleep':
+      overlayElement = (<SleepControls isActive={!!sleepLabel} onSelect={t => { sleepIn(t); setOverlay(undefined)} } />)
+      break;
+  
+    case 'nav':
+       overlayElement = <NavControls onNavigate={t => navigate(t)} />
+       break;
+
+    default:
+      break;
+  }
+
   return (
     <div className="App">
       <h1>{playlist?.title || "Unreachable playlist"}</h1>
@@ -124,29 +120,32 @@ function App() {
             <audio
               ref={r => player.current = r}
               controls={true}
-              autoPlay={true}
+              autoPlay={false}
               src={currentClip?.link}
               onEnded={onClipEnded}
+              preload="auto"
               onDurationChange={onPlayerReady}
               onTimeUpdate={onPlayerTimeUpdate} />
           </div>
-          { false && <div id="navigation">
-            <h2>Navigate</h2>
-            <div className="buttons">
-              {jumps.map(j => <Button key={j.title} negative={j.value < 0} onClick={() => navigate(j.value)}>{j.title}</Button>)}
-            </div>
-          </div> }
-          <div id="sleep">
-            <h2>Sleep timer</h2>
-            {sleepLabel && <div className="sleeping">{sleepLabel} <Button onClick={() => clearSleepInterval()}>X</Button></div>}
-            <div className="buttons">
-              {sleep.map(s => <Button key={s} onClick={() => sleepIn(s)}>{`${s} min`}</Button>)}
-            </div>
+
+          <div id="controls">
+            {/* <img className="clickable" alt="show navigation controls" src={navIcon} onClick={() => setOverlay('nav')} /> */}
+            <img className="clickable" alt="show sleep controls" src={sleepIcon} onClick={() => setOverlay('sleep')} /> 
           </div>
+          <div id="status">
+          {sleepLabel && <div className="sleeping">{sleepLabel}</div>}
+          </div>
+         
+          { overlay && 
+            <Overlay onClose={() => setOverlay(undefined)}>
+              {overlayElement}
+            </Overlay>
+          }
         </>
       }
     </div>
   );
 }
+
 
 export default App;
