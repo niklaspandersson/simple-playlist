@@ -64,3 +64,20 @@
   font-size: 150%;
   margin: 2vh;
 }
+
+#clips {
+  flex: 1 0 auto;
+  padding: 20px 0;
+  overflow-y: scroll;
+  display: flex;
+  flex-flow: column;
+  align-self: stretch;
+  justify-self: stretch;
+}
+
+#clips .button {
+  text-align: left;
+  margin: 5px auto;
+  width: 66%;
+  padding: 10px;
+}

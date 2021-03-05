@@ -7,6 +7,7 @@ import navIcon from "./nav.png";
 import './App.css';
 import { SleepControls } from './overlays/SleepControls';
 import { NavControls } from './overlays/NavControls';
+import { ClipsControls } from './overlays/ClipsControls';
 
 const PLAYLIST = process.env.REACT_APP_PLAYLIST_URL || "playlist.json";
 const AUTO_REWIND = parseInt(process.env.REACT_APP_AUTO_REWIND || "5", 10) || 5;
@@ -74,10 +75,11 @@ function App() {
   }
 
   function onPlayerReady() {
-    if (currentClip!.startTime)
+    if (currentClip!.startTime && currentClip!.startTime < player.current!.duration)
       player.current!.currentTime = currentClip!.startTime;
   }
   function onClipEnded() {
+    window.localStorage.setItem(`currentTime-${currentClip!.index}`, "end");
     const nextIndex = currentClip!.index + 1;
     if (nextIndex < playlist!.clips.length)
       changeEpisode(nextIndex);
@@ -90,17 +92,19 @@ function App() {
     window.localStorage.setItem("currentEpisodeIndex", index.toString());
   }
 
-  const options = playlist?.clips?.map((c, i) => <option key={c.title} value={i} title={c.title}>{c.title}</option>)
-
-  let overlayElement = <div></div>
+  let overlayElement;
   switch (overlay) {
     case 'sleep':
       overlayElement = (<SleepControls isActive={!!sleepLabel} onSelect={t => { sleepIn(t); setOverlay(undefined)} } />)
       break;
   
     case 'nav':
-       overlayElement = <NavControls onNavigate={t => { navigate(t); setOverlay(undefined)} } />
-       break;
+      overlayElement = <NavControls onNavigate={t => { navigate(t); setOverlay(undefined)} } />
+      break;
+
+    case 'clips':
+      overlayElement = <ClipsControls clips={playlist?.clips || []} onSelect={c => { changeEpisode(c.index); setOverlay(undefined) } } />
+      break;
 
     default:
       break;
@@ -112,11 +116,8 @@ function App() {
       {
         playlist &&
         <>
-          <select value={currentClip?.index || 0} onChange={e => changeEpisode(parseInt(e.target.value, 10))}>
-            {options}
-          </select>
+          <h2 className="clickable" onClick={() => setOverlay('clips')}>{currentClip?.title || "Select clip"}</h2>
           <div id="current-clip">
-            <h2>{currentClip?.title || "Select clip"}</h2>
             <audio
               ref={r => player.current = r}
               controls={true}
