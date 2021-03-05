@@ -73,6 +73,16 @@ function App() {
     setOverlay(undefined)
   }, [setOverlay]);
 
+  const onNavigate = React.useCallback((t:number) => {
+    navigate(t); 
+    setOverlay(undefined);
+  }, [navigate, setOverlay]);
+
+  const selectClip = React.useCallback((c:Clip) => {
+    changeEpisode(c.index);
+    setOverlay(undefined);
+  }, [changeEpisode, setOverlay]);
+
   const hasSleepLabel = !!sleepLabel;
   const overlayElement = React.useMemo(() => {
     let res;
@@ -82,18 +92,18 @@ function App() {
         break;
     
       case 'nav':
-        res = <NavControls onNavigate={t => { navigate(t); setOverlay(undefined)} } />
+        res = <NavControls onNavigate={onNavigate} />
         break;
   
       case 'clips':
-        res = <ClipsControls clips={playlist?.clips || []} onSelect={c => { changeEpisode(c.index); setOverlay(undefined) } } />
+        res = <ClipsControls currentIndex={currentClip?.index} clips={playlist?.clips || []} onSelect={selectClip} />
         break;
   
       default:
         break;
     }
     return res;
-  }, [overlay, playlist?.clips, navigate, setOverlay, hasSleepLabel, setSleep, changeEpisode]);
+  }, [overlay, playlist?.clips, currentClip, hasSleepLabel, setSleep, onNavigate, selectClip]);
 
   return (
     <div className="App">

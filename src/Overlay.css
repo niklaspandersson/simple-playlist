@@ -75,10 +75,21 @@
   flex-flow: column;
   align-self: stretch;
   justify-self: stretch;
+  text-align: left;
 }
 
 #clips .button {
-  text-align: left;
+  display: flex;
+  align-items: center;
+  flex-flow: row nowrap;
   margin: 5px;
   padding: 10px;
+}
+
+#clips .clip.current {
+  font-weight: bold;
+}
+
+#clips .button span {
+  flex: 1 0 auto;
 }
