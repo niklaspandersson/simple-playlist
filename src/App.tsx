@@ -8,18 +8,18 @@ import './App.css';
 import { SleepControls } from './overlays/SleepControls';
 import { NavControls } from './overlays/NavControls';
 import { ClipsControls } from './overlays/ClipsControls';
+import { useSleep } from './hooks/useSleep';
 
 const PLAYLIST = process.env.REACT_APP_PLAYLIST_URL || "playlist.json";
 const AUTO_REWIND = parseInt(process.env.REACT_APP_AUTO_REWIND || "5", 10) || 5;
 
 function App() {
   const player = React.useRef<HTMLAudioElement | null>();
-  const sleepInterval = React.useRef(0);
-  const sleepEnd = React.useRef(0);
+  const pausePlayer = React.useCallback(function() { player.current?.pause() }, []);
 
-  const [sleepLabel, setSleepLabel] = React.useState("");
   const [currentClip, setCurrentClip] = React.useState<Clip | null>(null);
   const [playlist, setPlaylist] = React.useState<Playlist | null>(null);
+  const [sleepLabel, sleepIn] = useSleep(pausePlayer);
 
   const [overlay, setOverlay] = React.useState<string|undefined>(undefined); 
 
@@ -41,38 +41,10 @@ function App() {
     window.localStorage.setItem(`currentTime-${currentClip!.index}`, time.toString());
   }
 
-  function navigate(value: number) {
+  const navigate = React.useCallback((value: number) => {
     if(player.current?.duration)
       player.current!.currentTime = Math.min(Math.max(0, player.current!.currentTime + value), player.current!.duration);
-  }
-  function clearSleepInterval() {
-    window.clearInterval(sleepInterval.current);
-    sleepInterval.current = 0;
-    setSleepLabel("");
-  }
-
-  function sleepIn(value: number) {
-    if(sleepInterval.current) {
-      clearSleepInterval();
-    }
-    if(!value)
-      return;
-
-    sleepEnd.current = Date.now() + value*60000;
-    setSleepLabel(`${value-1}:59`);
-
-    sleepInterval.current = window.setInterval(() => {
-      const currentTime = Date.now();
-      if(currentTime >= sleepEnd.current) {
-        clearSleepInterval();
-        player.current?.pause();
-      }
-      else {
-        const duration = Math.floor((sleepEnd.current - currentTime)/1000);
-        setSleepLabel(`${Math.floor(duration/60)}:${(duration%60).toLocaleString("se", { minimumIntegerDigits: 2})}`)
-      }
-    }, 1000);
-  }
+  }, []);
 
   function onPlayerReady() {
     if (currentClip!.startTime && currentClip!.startTime < player.current!.duration)
@@ -85,30 +57,43 @@ function App() {
       changeEpisode(nextIndex);
   }
 
-  function changeEpisode(index: number) {
+  const changeEpisode = React.useCallback((index: number) => {
     const episode = playlist!.clips[index];
     episode.startTime = parseFloat(window.localStorage.getItem(`currentTime-${index}`) || "0") || 0;
     setCurrentClip(episode);
     window.localStorage.setItem("currentEpisodeIndex", index.toString());
-  }
+  }, [setCurrentClip, playlist]);
 
-  let overlayElement;
-  switch (overlay) {
-    case 'sleep':
-      overlayElement = (<SleepControls isActive={!!sleepLabel} onSelect={t => { sleepIn(t); setOverlay(undefined)} } />)
-      break;
+  const setSleep = React.useCallback((t:number) => {
+    sleepIn(t);
+    setOverlay(undefined);
+  }, [sleepIn, setOverlay]);
+
+  const closeOverlay = React.useCallback(() => {
+    setOverlay(undefined)
+  }, [setOverlay]);
+
+  const hasSleepLabel = !!sleepLabel;
+  const overlayElement = React.useMemo(() => {
+    let res;
+    switch (overlay) {
+      case 'sleep':
+        res = (<SleepControls isActive={hasSleepLabel} onSelect={setSleep} />)
+        break;
+    
+      case 'nav':
+        res = <NavControls onNavigate={t => { navigate(t); setOverlay(undefined)} } />
+        break;
   
-    case 'nav':
-      overlayElement = <NavControls onNavigate={t => { navigate(t); setOverlay(undefined)} } />
-      break;
-
-    case 'clips':
-      overlayElement = <ClipsControls clips={playlist?.clips || []} onSelect={c => { changeEpisode(c.index); setOverlay(undefined) } } />
-      break;
-
-    default:
-      break;
-  }
+      case 'clips':
+        res = <ClipsControls clips={playlist?.clips || []} onSelect={c => { changeEpisode(c.index); setOverlay(undefined) } } />
+        break;
+  
+      default:
+        break;
+    }
+    return res;
+  }, [overlay, playlist?.clips, navigate, setOverlay, hasSleepLabel, setSleep, changeEpisode]);
 
   return (
     <div className="App">
@@ -137,7 +122,7 @@ function App() {
           </div>
          
           { overlay && 
-            <Overlay onClose={() => setOverlay(undefined)}>
+            <Overlay onClose={closeOverlay}>
               {overlayElement}
             </Overlay>
           }
