@@ -3,15 +3,18 @@ import { Clip, Playlist, getPlaylist } from "./playlist";
 import { Overlay } from "./Overlay";
 import sleepIcon from "./sleep.png";
 import navIcon from "./nav.png";
+import { Next } from "./icons/Next";
 
 import './App.css';
 import { SleepControls } from './overlays/SleepControls';
 import { NavControls } from './overlays/NavControls';
 import { ClipsControls } from './overlays/ClipsControls';
 import { useSleep } from './hooks/useSleep';
+import { Prev } from './icons/Prev';
 
 const PLAYLIST = process.env.REACT_APP_PLAYLIST_URL || "playlist.json";
 const AUTO_REWIND = parseInt(process.env.REACT_APP_AUTO_REWIND || "5", 10) || 5;
+const MIN_SAVE_TIME = 5;
 
 function App() {
   const player = React.useRef<HTMLAudioElement | null>();
@@ -38,7 +41,10 @@ function App() {
 
   function onPlayerTimeUpdate(ev: React.SyntheticEvent<HTMLAudioElement>) {
     const time = ev.currentTarget.currentTime;
-    window.localStorage.setItem(`currentTime-${currentClip!.index}`, time.toString());
+    if(time > MIN_SAVE_TIME)
+      window.localStorage.setItem(`currentTime-${currentClip!.index}`, time.toString());
+    else
+      window.localStorage.removeItem(`currentTime-${currentClip!.index}`);
   }
 
   const navigate = React.useCallback((value: number) => {
@@ -63,6 +69,14 @@ function App() {
     setCurrentClip(episode);
     window.localStorage.setItem("currentEpisodeIndex", index.toString());
   }, [setCurrentClip, playlist]);
+
+  function navEpisode(dir:number) {
+    if(currentClip) {
+      let nextIndex = currentClip.index+dir;
+      if(nextIndex >= 0 && nextIndex < (playlist?.clips?.length || 0))
+        changeEpisode(nextIndex);
+    }
+  }
 
   const setSleep = React.useCallback((t:number) => {
     sleepIn(t);
@@ -111,7 +125,7 @@ function App() {
       {
         playlist &&
         <>
-          <h2 className="clickable" onClick={() => setOverlay('clips')}>{currentClip?.title || "Select clip"}</h2>
+          <nav><button className="prev clickable" onClick={() => navEpisode(-1)}><Prev size={20} /></button><button className="current clickable" onClick={() => setOverlay('clips')}>{currentClip?.title || "Select clip"}</button><button className="next clickable" onClick={() => navEpisode(1)}><Next size={20} /></button></nav>
           <div id="current-clip">
             <audio
               ref={r => player.current = r}

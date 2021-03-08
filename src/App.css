@@ -4,14 +4,35 @@
   max-width: 500px;
   margin: 0 auto;
   height: 100%;
-  padding-top: 1px;
+  padding: .5em 1.5em;
   background-color: rgb(55, 59, 66);
+}
+
+@media (max-width: 450px) {
+  .App {
+    padding: .5em 0em;
+  }
 }
 
 .noscroll {
   overflow: hidden;
 }
 
+nav {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+nav button {
+  background: transparent;
+  border: none;
+  margin: .67em 0;
+  font-size: 1.6em;
+  color: inherit;
+  font-weight: bold;
+  font-family: inherit;
+}
 #controls {
   display: flex;
   align-items: center;
@@ -31,14 +52,14 @@
   cursor: pointer;
   display: inline;
   background-color: black;
-  color: white;
+  color: rgb(247, 247, 247);
   margin-left: 8px;
   padding: 0px 7px 1px 7px;
   border-radius: 12px;
 }
 
 .button.invert {
-  background-color: white;
+  background-color: rgb(247, 247, 247);
   color: black;
 }
 

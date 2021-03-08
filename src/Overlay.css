@@ -4,7 +4,9 @@
   left: 0;
   bottom: 0;
   right: 0;
-  background-color: rgba(0,0,0, .9);
+  background-color: rgba(0,0,0, .8);
+  backdrop-filter: blur( 6.5px );
+  -webkit-backdrop-filter: blur( 6.5px );  
   display: flex;
 }
 
@@ -61,7 +63,6 @@
 }
 
 #nav .result {
-  color: white;
   font-weight: bold;
   font-size: 150%;
   margin: 2vh;
