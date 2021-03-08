@@ -1,0 +1,17 @@
+{
+  "title": "NASA - Demo playlist",
+  "clips": [
+    {
+      "link": "https://archive.org/download/SierraNevada/__01-14-16_Commercial-Resupply_CRS-2_Announcement-Briefing_at_JSC.mp3",
+      "title": "Sierra Nevada"
+    },
+    {
+      "link": "https://archive.org/download/Expedition53/09-12-17_EXP53_Soyuz_MS-06_Docking_Coverage.mp3",
+      "title": "Expedition 53 - Docking coverage"
+    },
+    {
+      "link": "https://archive.org/download/MarsScienceLaboratoryCuriosityRover/08-06-12_MSL_Curiosity-Rover_Post-Landing-News-Briefing_Landing-Recap-and_Sol-1.mp3",
+      "title": "Curiosity post landing news briefing"
+    }
+  ]
+}

@@ -94,3 +94,18 @@
 #clips .button span {
   flex: 1 0 auto;
 }
+
+#about {
+  background: rgb(40, 42, 44);
+  padding: 2em;
+  display: flex;
+  flex-flow: column;
+  align-self: center;
+  justify-self: center;
+}
+
+#about ul {
+  margin-top: 0;
+  text-align: left;
+  line-height: 1.5em;
+}

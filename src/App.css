@@ -6,12 +6,21 @@
   height: 100%;
   padding: .5em 1.5em;
   background-color: rgb(55, 59, 66);
+  position: relative;
 }
 
 @media (max-width: 450px) {
   .App {
     padding: .5em 0em;
   }
+}
+
+a, a:active, a:visited {
+  color: rgb(247, 247, 247);
+}
+
+a:hover {
+  color: white;
 }
 
 .noscroll {
@@ -24,15 +33,20 @@ nav {
   justify-content: space-between;
   align-items: center;
 }
-nav button {
+nav button, button.icon {
+  cursor: pointer;
   background: transparent;
   border: none;
-  margin: .67em 0;
-  font-size: 1.6em;
   color: inherit;
-  font-weight: bold;
   font-family: inherit;
 }
+
+nav button {
+  margin: .67em 0;
+  font-size: 1.6em;
+  font-weight: bold;
+}
+
 #controls {
   display: flex;
   align-items: center;
@@ -66,4 +80,17 @@ nav button {
 .sleeping {
   font-weight: bold;
   color: red;
+}
+
+.icon-info {
+  position: absolute;
+  bottom: 1em;
+  right: 1rem;
+  font-size: 2em;
+  font-weight: normal;
+  opacity: .6;
+  transition: opacity .3s ease;
+}
+.icon-info:hover {
+  opacity: 1;
 }

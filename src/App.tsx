@@ -11,6 +11,7 @@ import { NavControls } from './overlays/NavControls';
 import { ClipsControls } from './overlays/ClipsControls';
 import { useSleep } from './hooks/useSleep';
 import { Prev } from './icons/Prev';
+import { About } from './overlays/About';
 
 const PLAYLIST = process.env.REACT_APP_PLAYLIST_URL || "playlist.json";
 const AUTO_REWIND = parseInt(process.env.REACT_APP_AUTO_REWIND || "5", 10) || 5;
@@ -28,13 +29,22 @@ function App() {
 
   React.useEffect(() => {
     (async () => {
-      const initialEpisodeIndex = parseInt(window.localStorage.getItem("currentEpisodeIndex") || "0", 10) || 0;
-      const initialTime = parseFloat(window.localStorage.getItem(`currentTime-${initialEpisodeIndex}`) || "0") || 0;
-      const pl = await getPlaylist(PLAYLIST);
-
-      if (pl) {
+      try {
+        const initialEpisodeIndex = parseInt(window.localStorage.getItem("currentEpisodeIndex") || "0", 10) || 0;
+        const initialTime = parseFloat(window.localStorage.getItem(`currentTime-${initialEpisodeIndex}`) || "0") || 0;
+        const pl = await getPlaylist(PLAYLIST);
+  
+        if (pl) {
+          setPlaylist(pl);
+          setCurrentClip({ ...pl!.clips[initialEpisodeIndex], startTime: Math.max(0, initialTime - AUTO_REWIND) });
+        }
+      }
+      catch(err) {
+        const pl = {
+          title: "Unreachable playlist",
+          clips: []
+        }
         setPlaylist(pl);
-        setCurrentClip({ ...pl!.clips[initialEpisodeIndex], startTime: Math.max(0, initialTime - AUTO_REWIND) });
       }
     })();
   }, [])
@@ -112,6 +122,10 @@ function App() {
       case 'clips':
         res = <ClipsControls currentIndex={currentClip?.index} clips={playlist?.clips || []} onSelect={selectClip} />
         break;
+      
+      case 'about':
+        res = <About />
+        break;
   
       default:
         break;
@@ -121,7 +135,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>{playlist?.title || "Unreachable playlist"}</h1>
+      <h1>{playlist?.title || ""}</h1>
       {
         playlist &&
         <>
@@ -152,6 +166,7 @@ function App() {
           }
         </>
       }
+      <button className="icon icon-info" onClick={() => setOverlay('about')}>🛈</button>
     </div>
   );
 }
