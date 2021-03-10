@@ -109,3 +109,7 @@
   text-align: left;
   line-height: 1.5em;
 }
+
+#about h3 {
+  margin: 0;
+}

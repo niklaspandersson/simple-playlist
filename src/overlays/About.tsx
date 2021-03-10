@@ -2,7 +2,7 @@ import React from "react";
 
 export const About:React.FC = ({children}) => {
 
-  return <div id="about">
+  return <div id="about" onClick={ev => ev.stopPropagation()}>
     <h3>Simple playlist</h3>
     <p>This is a demo of a simple playlist application which allows you to use common podcast features when listening through playlists of raw audio files.</p>
     <b>Features</b>
